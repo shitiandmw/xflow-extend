@@ -1,0 +1,51 @@
+{
+  "name": "xflow-extend",
+  "version": "1.0.1",
+  "description": "**XFlow Extend** 是基于 [XFlow](https://github.com/antvis/XFlow) 的扩展项目，旨在简化流程图编辑器的开发，提高开发效率。它提供了简单易用的 API，可以自定义节点、连接线、流程图属性和节点设置器等。",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shitiandmw/xflow-extend.git"
+  },
+  "author": "shitiandmw",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/shitiandmw/xflow-extend/issues"
+  },
+  "homepage": "https://github.com/shitiandmw/xflow-extend#readme",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@antv/xflow": "^2.1.6",
+    "eventemitter3": "^5.0.1",
+    "less": "^4.2.0",
+    "nanoid": "^5.0.7"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "postcss": "^8.4.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1"
+  }
+}
