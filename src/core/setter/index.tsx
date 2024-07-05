@@ -36,6 +36,7 @@ const Setter = () => {
                 selected: true,
             },
         }
+        console.log('node:selected', nodeCopy)
         setShowDom(SelectDom.Node)
         setNodeSelected(nodeCopy)
         updateNode(node.id!, {

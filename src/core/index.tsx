@@ -14,6 +14,7 @@ import { CcNode, CcNodeMeta } from "./node";
 import { AudioNode, AudioNodeMeta } from "./node";
 import { EndNode, EndNodeMeta } from "./node";
 import { StartNode, StartNodeMeta } from "./node";
+import {getNode} from './node'
 
 // 注册节点
 // registerNode("AudioNode", AudioNode, AudioNodeMeta, { width:200, height:100 })
@@ -101,6 +102,17 @@ const XFlowExtend = forwardRef((_, ref) => {
     React.useImperativeHandle(ref, () => ({
         getFlowData: getFlowData,
         setFlowData: (data: FLowMetaData) => {
+            if(data.nodes && data.nodes.length>0){
+                data.nodes = data.nodes.map(node => {
+                    const newNode = {...node}
+                    const nodeMeta = getNode(node?.shape||"")
+                    if(nodeMeta){
+                        const nodeMetaProps = nodeMeta.meta.props
+                        newNode.data = {...(newNode?.data||[]), props:nodeMetaProps}
+                    }
+                    return newNode
+                })
+            }
             eventRef.current?.setFlowData(data)
             setFlowData(data)
         },

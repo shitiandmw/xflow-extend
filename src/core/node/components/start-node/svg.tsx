@@ -1,7 +1,7 @@
 
 const svg = ({ className }: { className?: string }) => {
     return <svg
-        className={"w-full h-full" + className}
+        className={ className}
         style={{ fill: "currentColor" }}
         viewBox="0 0 1024 1024"
         version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7970">

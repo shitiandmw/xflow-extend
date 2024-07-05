@@ -1,6 +1,7 @@
 import { FLowMeta, FLowMetaData, ObjectMetaProps } from "./types";
 import { eventEmitter } from './events'
-const Meta: FLowMeta = {
+// import {getNode} from './node'
+let Meta: FLowMeta = {
     data: {
         // 允许撤回
         allowRevoke: true,
@@ -84,6 +85,7 @@ export function setFlowData(data: FLowMetaData | ((prev: FLowMetaData) => FLowMe
         data = data(Meta.data);
     }
     Meta.data = { ...Meta.data, ...data };
+   
     eventEmitter.emit('reloadFLow', {})
 }
 
