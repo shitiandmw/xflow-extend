@@ -103,7 +103,6 @@ const Keyboard = forwardRef((_, ref) => {
   })
 
   React.useEffect(() => {
-    console.log("React.useEffect", nodes)
     setFlowDataByName("nodes", nodes);
   }, [nodes]);
   React.useEffect(() => {

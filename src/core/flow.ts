@@ -1,23 +1,16 @@
 import { FLowMeta, FLowMetaData, ObjectMetaProps } from "./types";
-import { eventEmitter } from './events'
-// import {getNode} from './node'
+import { eventEmitter } from './events';
+
 let Meta: FLowMeta = {
     data: {
-        // 允许撤回
         allowRevoke: true,
-        // 重复审批人允许自动通过
         repeatApprove: true,
-        // 允许评论
         allowComment: true,
-        // 审批方式
         approveType: {
             type: 1,
-            // 允许查看上级节点审批意见
             viewParentComment: true,
         },
-        // 节点数据
         nodes: [],
-        // 连接线数据
         edges: [],
     },
     props: [
@@ -53,10 +46,20 @@ let Meta: FLowMeta = {
         //     }
         // }
     ],
-}
+};
+
+const createHandler = (): ProxyHandler<any> => ({
+    set(target, prop, value) {
+        target[prop] = value;
+        eventEmitter.emit('dataChanged', target);
+        return true;
+    }
+});
+
+let proxyMetaData = new Proxy(Meta.data, createHandler());
 
 export function getFlowData() {
-    return Meta.data;
+    return proxyMetaData;
 }
 
 export function getFlowProps() {
@@ -79,16 +82,26 @@ export function setFlowProps(
     eventEmitter.emit('reloadFlow', {});
 }
 
-
 export function setFlowData(data: FLowMetaData | ((prev: FLowMetaData) => FLowMetaData)) {
     if (typeof data === 'function') {
-        data = data(Meta.data);
+        data = data(proxyMetaData);
     }
-    Meta.data = { ...Meta.data, ...data };
-   
-    eventEmitter.emit('reloadFLow', {})
+    for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+            proxyMetaData[key] = data[key as keyof FLowMetaData];
+        }
+    }
+    eventEmitter.emit('reloadFlow', {});
 }
 
 export function setFlowDataByName(name: keyof typeof Meta.data, value: any) {
-    Meta.data[name] = value;
+    proxyMetaData[name] = value;
+}
+
+export function registerDataChangeHandler(handler: (data: FLowMetaData) => void) {
+    eventEmitter.on('dataChanged', handler);
+}
+
+export function unregisterDataChangeHandler(handler: (data: FLowMetaData) => void) {
+    eventEmitter.off('dataChanged', handler);
 }

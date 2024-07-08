@@ -1,5 +1,5 @@
 import './App.css'
-import XFlowExtend, { registerSetter, registerNode, setEdgeMeta, setEdgeProps } from './core'
+import XFlowExtend, { registerSetter, registerNode, setEdgeMeta, setEdgeProps ,FLowMetaData ,registerDataChangeHandler, unregisterDataChangeHandler} from './core'
 import { StringSetter, BooleanSetter, RadioGroupSetter } from './core/setter'
 import { CcNode, CcNodeMeta } from "./core/node";
 import { AudioNode, AudioNodeMeta } from "./core/node";
@@ -46,8 +46,10 @@ type FlowRefType = {
   setFlowData: (data: any) => void;
 };
 const App = () => {
-  useEffect(() => {
-  }, [])
+  const handleFLowDataChange = (data:FLowMetaData) => {
+    console.log('流程数据变化', data)
+    localStorage.setItem('flowData', JSON.stringify(data))
+  }
   const flowRef = React.useRef<FlowRefType>();
   const getFlowData = () => {
     const flowData = flowRef.current?.getFlowData()
@@ -59,6 +61,12 @@ const App = () => {
     flowRef.current?.setFlowData(flowData)
     console.log('设置数据', flowData)
   }
+  useEffect(() => {
+    registerDataChangeHandler(handleFLowDataChange)
+    return () => {
+      unregisterDataChangeHandler(handleFLowDataChange)
+    }
+  }, [])
   return <div className='x-w-screen x-h-screen x-bg-gray-400 x-flex x-justify-center x-items-center x-flex-col x-gap-4'>
     <div className='x-w-[1200px] x-h-16 x-border x-rounded-lg x-bg-white x-flex x-items-center x-px-4 x-gap-2'>
       <div onClick={getFlowData} className=' x-rounded x-border x-bg-blue-500  x-text-gray-50 x-p-4 x-w-32 x-h-10 x-cursor-pointer x-flex x-justify-center x-items-center '>
