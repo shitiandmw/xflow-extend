@@ -1,6 +1,6 @@
 import React from "react";
 import { getSetter } from "./setterRegistry";
-import {ObjectMetaProps} from "../types"
+import { ObjectMetaProps } from "../types"
 
 interface ObjData {
     id: string;
@@ -34,19 +34,19 @@ const SetterRender: React.FC<SetterRenderProps> = ({ objName = "对象", obj, up
             <span>选中的{objName}没有可以设置的属性</span>
         </div>
     return (
-        <>
+        <div key={obj?.id}>
             {obj?.data?.props.map((item: ObjectMetaProps, index: number) => {
                 const SetterComponent = getSetter(item.setter);
                 let setterProps = {}
                 if (!SetterComponent) return null;
                 if (typeof item.setter == 'object') {
                     setterProps = item.setter.props || {}
-                }
+                } 
                 return (
                     <SetterComponent {...setterProps} key={`${item.name}-${index}`} label={item.title} name={item.name} value={typeof obj.data[item.name] == "undefined" ? item.defaultValue : obj.data[item.name]} onChange={(value: string) => { handlePropChange(item.name, value) }} />
                 )
             })}
-        </>
+        </div>
     );
 };
 
