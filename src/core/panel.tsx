@@ -29,7 +29,9 @@ const Panel = () => {
         data.id = id
         data.props = node.meta.props
         node.meta.props?.forEach(prop => {
-            data[prop.name] = prop.defaultValue || ""
+            if ("defaultValue" in prop)
+                data[prop.name] = prop.defaultValue
+            else data[prop.name] = ""
         })
         startDrag(
             {
