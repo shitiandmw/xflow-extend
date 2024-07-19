@@ -5,9 +5,11 @@ import { getEdgeMeta } from '../edge';
 import SetterRender from "./setterRender";
 import { getFlowData, setFlowData, getFlowProps } from '../flow';
 import { eventEmitter } from '../events';
+interface SetterProps {
+    mode?: string;
+  }
 
-
-const Setter = () => {
+const Setter = ({mode="desgin"}:SetterProps) => {
     const edgeMeta = getEdgeMeta();
     const [nodeSelected, setNodeSelected] = useState<ObjectData>()
     const [edgeSelected, setEdgeSelected] = useState<ObjectData>()
@@ -28,7 +30,15 @@ const Setter = () => {
             }
         })
     }
+ 
     useGraphEvent('node:selected', ({ node }) => {
+        console.log("node:selected mode",mode)
+        if (mode != "desgin") {
+            updateNode(node.id!, {
+                selected: false
+            });
+            return 
+        } 
         const nodeCopy = {
             id: node.id,
             data: {
@@ -36,7 +46,6 @@ const Setter = () => {
                 selected: true,
             },
         }
-        console.log('node:selected', nodeCopy)
         setShowDom(SelectDom.Node)
         setNodeSelected(nodeCopy)
         updateNode(node.id!, {
@@ -93,8 +102,13 @@ const Setter = () => {
             }} />}
             {activeTab == SelectDom.Edge && <SetterRender objName="连接线" obj={edgeSelected} updateObj={(edge: any) => {
                 const label = edge.data?.label || edge.data?.title
+               
                 updateEdge(edgeSelected?.id!, 
                     { 
+                        style: {
+                            stroke: "#ff3300",
+                            lineWidth: 1,
+                        },
                         data: edge.data ,
                         label: label ? {
                             attrs: {

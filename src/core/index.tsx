@@ -1,4 +1,4 @@
-import { Graph, XFlow, Path, XFlowGraph, Clipboard, Control, Grid } from '@antv/xflow';
+import { Graph, XFlow, Path, XFlowGraph, Clipboard, Control, Grid  } from '@antv/xflow';
 import { DAG_CONNECTOR } from './consts';
 import Panel from './panel';
 import Setter from './setter';
@@ -14,7 +14,7 @@ import { CcNode, CcNodeMeta } from "./node";
 import { AudioNode, AudioNodeMeta } from "./node";
 import { EndNode, EndNodeMeta } from "./node";
 import { StartNode, StartNodeMeta } from "./node";
-import {getNode} from './node'
+import { getNode } from './node'
 
 // 注册节点
 // registerNode("AudioNode", AudioNode, AudioNodeMeta, { width:200, height:100 })
@@ -54,9 +54,11 @@ Graph.registerConnector(
     true,
 );
 
-
-
-const XFlowExtend = forwardRef((_, ref) => {
+export interface XFlowExtendProps {
+    mode?: string;
+}
+// 流程引擎 
+const XFlowExtend = forwardRef(({ mode = "desgin" }: XFlowExtendProps, ref) => {
     const registerEdge = (edgeMeta: EdgeMeta) => {
         try {
             Graph.registerEdge(edgeMeta.id, {
@@ -69,6 +71,7 @@ const XFlowExtend = forwardRef((_, ref) => {
                             width: 14,
                             height: 10,
                         },
+                        opacity: edgeMeta?.opacity || 1,
                     },
                     label: {
                         fill: '#000',
@@ -97,20 +100,34 @@ const XFlowExtend = forwardRef((_, ref) => {
     }
     const edgeMeta = getEdgeMeta()
     registerEdge(edgeMeta)
-
+    registerEdge({
+        id: "ignore_edge",
+        color:edgeMeta.color, // 连接线颜色
+        width: edgeMeta.width,// 连接线宽度
+        opacity:0.1
+    })
     const eventRef = React.useRef<EventRefType>(null);
     React.useImperativeHandle(ref, () => ({
         getFlowData: getFlowData,
         setFlowData: (data: FLowMetaData) => {
-            if(data.nodes && data.nodes.length>0){
+            if (data.nodes && data.nodes.length > 0) {
                 data.nodes = data.nodes.map(node => {
-                    const newNode = {...node}
-                    const nodeMeta = getNode(node?.shape||"")
-                    if(nodeMeta){
+                    const newNode = { ...node }
+                    newNode.selected = false;
+                    const nodeMeta = getNode(node?.shape || "")
+                    if (nodeMeta) {
                         const nodeMetaProps = nodeMeta.meta.props
-                        newNode.data = {...(newNode?.data||[]), props:nodeMetaProps}
+                        newNode.data = { ...(newNode?.data || []), props: nodeMetaProps, selected:false }
                     }
                     return newNode
+                })
+            }
+            if (data.edges && data.edges.length > 0)
+            {
+                data.edges = data.edges.map(edge => {
+                    const newEdge = { ...edge }
+                    newEdge.selected = false;
+                    return newEdge
                 })
             }
             eventRef.current?.setFlowData(data)
@@ -122,10 +139,10 @@ const XFlowExtend = forwardRef((_, ref) => {
     return <div className='x-w-full x-h-full  x-text-sm '>
         <XFlow >
             <div className='x-w-full x-h-full x-flex '>
-                <div className='x-w-44 x-h-full'>
+                <div className={'x-w-44 x-h-full ' + (mode == "desgin" ? '' : 'x-hidden')}>
                     <Panel />
                 </div>
-                <div className=' x-flex-1 x-relative'>
+                <div className=' x-flex-1 x-relative x-overflow-hidden'>
                     <XFlowGraph pannable
                         connectionOptions={{
                             snap: true,
@@ -170,10 +187,10 @@ const XFlowExtend = forwardRef((_, ref) => {
                         },
                     ]}
                 />
-                <Keyboard ref={eventRef} />
+                <Keyboard ref={eventRef} mode={mode} />
                 <Clipboard />
-                <div className=' x-w-64 x-h-full'>
-                    <Setter />
+                <div className={'x-w-64 x-h-full ' +(mode == "desgin" ? '' : 'x-hidden')}>
+                    <Setter mode={mode} />
                 </div>
             </div>
 

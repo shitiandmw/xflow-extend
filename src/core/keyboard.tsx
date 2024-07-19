@@ -1,13 +1,20 @@
-import { useGraphEvent, useGraphStore } from '@antv/xflow';
+import { useGraphEvent, useGraphStore, useGraphInstance } from '@antv/xflow';
 import { useKeyboard, useHistory, useClipboard, } from '@antv/xflow';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import React, { forwardRef } from 'react';
 import { setFlowDataByName } from './flow';
 import { FLowMetaData } from './types';
 
-const Keyboard = forwardRef((_, ref) => {
+export interface KeyboardProps {
+  mode?: string;
+}
+const Keyboard = forwardRef(({ mode = "desgin" }: KeyboardProps, ref) => {
   const { copy, paste, cut } = useClipboard();
   const { undo, redo } = useHistory();
+  const graph = useGraphInstance();
+  useEffect(() => {
+    console.log("graph edit", graph)
+  }, [graph])
   const nodes = useGraphStore((state) => state.nodes);
   const edges = useGraphStore((state) => state.edges);
   const initData = useGraphStore((state) => state.initData);
@@ -35,45 +42,63 @@ const Keyboard = forwardRef((_, ref) => {
     return [...selectEdgeIds(), ...selectNodeIds()];
   };
 
+  const keyboardBase = (fn: (...args: any) => any) => {
+    if (mode != "desgin") return 
+    typeof fn === 'function' && fn();
+  }
+
   useKeyboard(['meta+c', 'ctrl+c'], () => {
-    copy(selectShapeIds());
+    keyboardBase(()=>{ copy(selectShapeIds()); })
   });
 
   useKeyboard(['meta+v', 'ctrl+v'], () => {
-    console.log('paste');
-    paste({ offset: 48 });
+    keyboardBase(()=>{ 
+      console.log('paste');
+      paste({ offset: 48 });
+    })
   });
 
   useKeyboard(['meta+x', 'ctrl+x'], () => {
-    cut(selectShapeIds());
+    keyboardBase(()=>{ 
+      cut(selectShapeIds());
+    })
   });
 
   useKeyboard(['backspace', 'delete'], () => {
-    removeNodes(selectNodeIds());
-    removeEdges(selectEdgeIds());
+    keyboardBase(()=>{ 
+      removeNodes(selectNodeIds());
+      removeEdges(selectEdgeIds());
+    })
   });
 
   useKeyboard(['meta+z', 'ctrl+z'], () => {
-    undo();
+    keyboardBase(()=>{  
+      undo();
+    })
   });
   useKeyboard(['meta+shift+z', 'ctrl+shift+z'], () => {
-    redo();
+    keyboardBase(()=>{  
+      redo();
+    })
   });
 
   useKeyboard(['meta+a', 'ctrl+a'], (e) => {
     e.preventDefault();
-    nodes.map((node) => updateNode(node.id!, {
-      selected: true, data: {
-        ...node.data,
-        selected: true,
-      }
-    }));
-    edges.map((edge) => updateEdge(edge.id, {
-      selected: true, data: {
-        ...edge.data,
-        selected: true,
-      }
-    }));
+    keyboardBase(()=>{  
+      nodes.map((node) => updateNode(node.id!, {
+        selected: true, data: {
+          ...node.data,
+          selected: true,
+        }
+      }));
+      edges.map((edge) => updateEdge(edge.id, {
+        selected: true, data: {
+          ...edge.data,
+          selected: true,
+        }
+      }));
+    })
+   
   });
 
   useGraphEvent('edge:connected', ({ edge }) => {
@@ -112,8 +137,11 @@ const Keyboard = forwardRef((_, ref) => {
   React.useImperativeHandle(ref, () => ({
     setFlowData: (data: FLowMetaData) => {
       initData({ nodes: data?.nodes || [], edges: data.edges || [] })
+      setTimeout(() => {
+        graph?.zoomToFit({ maxScale: 1 });
+      }, 0);
     },
-  }), []);
+  }), [graph]);
 
   return null;
 });

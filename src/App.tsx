@@ -46,6 +46,7 @@ type FlowRefType = {
   setFlowData: (data: any) => void;
 };
 const App = () => {
+  const [mode,setMode] = React.useState('desgin')
   const handleFLowDataChange = (data:FLowMetaData) => {
     console.log('流程数据变化', data)
     localStorage.setItem('flowData', JSON.stringify(data))
@@ -58,8 +59,20 @@ const App = () => {
   }
   const setFlowData = () => {
     const flowData = JSON.parse(localStorage.getItem('flowData') || '{}')
+    console.log("flowData*********",flowData)
+    if(flowData?.edges)
+      flowData.edges = flowData.edges.map((edge : any) => {
+        edge.shape = "ignore_edge"
+        if (edge?.label) {
+          edge.label.attrs.text.opacity = 0.2
+        }
+        return edge
+      })
     flowRef.current?.setFlowData(flowData)
     console.log('设置数据', flowData)
+  }
+  const handleMode = ()=>{
+    setMode(mode === 'view'? 'desgin' : 'view')
   }
   useEffect(() => {
     registerDataChangeHandler(handleFLowDataChange)
@@ -75,11 +88,14 @@ const App = () => {
       <div onClick={setFlowData} className=' x-rounded x-border x-bg-green-500  x-text-gray-50 x-p-4 x-w-32 x-h-10 x-cursor-pointer x-flex x-justify-center x-items-center '>
         设置数据
       </div>
+      <div onClick={handleMode} className=' x-rounded x-border x-bg-gray-500  x-text-gray-50 x-p-4 x-w-32 x-h-10 x-cursor-pointer x-flex x-justify-center x-items-center '>
+        修改状态
+      </div>
     </div>
 
     <div className='x-w-[1200px] x-h-[800px] x-border x-rounded-lg x-bg-white'>
 
-      <XFlowExtend ref={flowRef} />
+      <XFlowExtend mode={mode} ref={flowRef} />
     </div>
   </div>
 }
