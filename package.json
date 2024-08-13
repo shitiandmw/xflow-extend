@@ -1,6 +1,6 @@
 {
   "name": "xflow-extend",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "**XFlow Extend** 是基于 [XFlow](https://github.com/antvis/XFlow) 的扩展项目，旨在简化流程图编辑器的开发，提高开发效率。它提供了简单易用的 API，可以自定义节点、连接线、流程图属性和节点设置器等。",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",

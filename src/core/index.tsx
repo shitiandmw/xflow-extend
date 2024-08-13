@@ -1,4 +1,4 @@
-import { Graph, XFlow, Path, XFlowGraph, Clipboard, Control, Grid  } from '@antv/xflow';
+import { Graph, XFlow, Path, XFlowGraph, Clipboard, Control, Grid } from '@antv/xflow';
 import { DAG_CONNECTOR } from './consts';
 import Panel from './panel';
 import Setter from './setter';
@@ -102,9 +102,9 @@ const XFlowExtend = forwardRef(({ mode = "desgin" }: XFlowExtendProps, ref) => {
     registerEdge(edgeMeta)
     registerEdge({
         id: "ignore_edge",
-        color:edgeMeta.color, // 连接线颜色
+        color: edgeMeta.color, // 连接线颜色
         width: edgeMeta.width,// 连接线宽度
-        opacity:0.1
+        opacity: 0.1
     })
     const eventRef = React.useRef<EventRefType>(null);
     React.useImperativeHandle(ref, () => ({
@@ -117,13 +117,12 @@ const XFlowExtend = forwardRef(({ mode = "desgin" }: XFlowExtendProps, ref) => {
                     const nodeMeta = getNode(node?.shape || "")
                     if (nodeMeta) {
                         const nodeMetaProps = nodeMeta.meta.props
-                        newNode.data = { ...(newNode?.data || []), props: nodeMetaProps, selected:false }
+                        newNode.data = { ...(newNode?.data || []), props: nodeMetaProps, selected: false }
                     }
                     return newNode
                 })
             }
-            if (data.edges && data.edges.length > 0)
-            {
+            if (data.edges && data.edges.length > 0) {
                 data.edges = data.edges.map(edge => {
                     const newEdge = { ...edge }
                     newEdge.selected = false;
@@ -143,7 +142,9 @@ const XFlowExtend = forwardRef(({ mode = "desgin" }: XFlowExtendProps, ref) => {
                     <Panel />
                 </div>
                 <div className=' x-flex-1 x-relative x-overflow-hidden'>
-                    <XFlowGraph pannable
+                    <XFlowGraph
+                        pannable
+                        zoomable
                         connectionOptions={{
                             snap: true,
                             allowBlank: false,
@@ -189,7 +190,8 @@ const XFlowExtend = forwardRef(({ mode = "desgin" }: XFlowExtendProps, ref) => {
                 />
                 <Keyboard ref={eventRef} mode={mode} />
                 <Clipboard />
-                <div className={'x-w-64 x-h-full ' +(mode == "desgin" ? '' : 'x-hidden')}>
+                {/* <Transform resizing rotating /> */}
+                <div className={'x-w-64 x-h-full ' + (mode == "desgin" ? '' : 'x-hidden')}>
                     <Setter mode={mode} />
                 </div>
             </div>
